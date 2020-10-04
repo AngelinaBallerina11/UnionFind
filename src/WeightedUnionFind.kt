@@ -27,19 +27,19 @@ class WeightedUnionFind(private val count: Int) : IUnionFind {
 
     /**
      * @return tempId is root
-     * @return count tree size
+     * @return childrenCount number of chilren of the the root with the given id
      */
     fun getRoot(id: Int): Root {
         var tempId: Int = id
-        var size = 0
+        var childrenCount = 0
         while (tempId != points[id]) {
             tempId = points[id]
         }
-        if (size == 0) {
+        if (childrenCount == 0) {
             val kids = countChildren(points, tempId)
-            size = if (kids > 0) kids else 0
+            childrenCount = if (kids > 0) kids else 0
         }
-        return Root(tempId, size)
+        return Root(tempId, childrenCount)
     }
 
     fun countChildren(points: List<Int>, rootId: Int): Int {
