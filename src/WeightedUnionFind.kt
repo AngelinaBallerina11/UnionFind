@@ -1,6 +1,7 @@
 class WeightedUnionFind(private val count: Int) : IUnionFind {
 
     val points = arrayListOf<Int>().apply { repeat(count) { add(it) } }
+    val size = arrayListOf<Int>().apply { repeat(count) { add(1) } }
 
     /* ID 1 becomes root of ID 2 */
     override fun union(id1: Int, id2: Int) {
@@ -8,14 +9,13 @@ class WeightedUnionFind(private val count: Int) : IUnionFind {
         if (!isConnected(id1, id2)) {
             val root1 = getRoot(id1)
             val root2 = getRoot(id2)
-            if (points.count { it == root1 } >= points.count { it == root2 }) {
-                points.forEachIndexed { index, i ->
-                    if (i == root2) points[index] = root1
-                }
+            if (root1 == root2) return
+            if (size[root1] < size[root2]) {
+                points[root1] = root2
+                size[root2] += size[root1]
             } else {
-                points.forEachIndexed { index, i ->
-                    if (i == root1) points[index] = root2
-                }
+                points[root2] = root1
+                size[root1] += size[root2]
             }
         }
     }
@@ -34,8 +34,8 @@ class WeightedUnionFind(private val count: Int) : IUnionFind {
      */
     fun getRoot(id: Int): Int {
         var tempId: Int = id
-        while (tempId != points[id]) {
-            tempId = points[id]
+        while (tempId != points[tempId]) {
+            tempId = points[tempId]
         }
         return tempId
     }

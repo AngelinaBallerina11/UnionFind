@@ -6,7 +6,7 @@ fun main() {
     println("Hello, Algorithms 1 course: Quick Find Example")
 
     val sw = StopWatch()
-    val N = 64000
+    val N = 1_000
     val algorithm = weighted(N)
     println()
     //println(sw.formatTime())
