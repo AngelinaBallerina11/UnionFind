@@ -4,42 +4,40 @@ class WeightedUnionFind(private val count: Int) : IUnionFind {
 
     /* ID 1 becomes root of ID 2 */
     override fun union(id1: Int, id2: Int) {
-        println("union($id1, $id2)")
+        // println("union($id1, $id2)")
         if (!isConnected(id1, id2)) {
             val root1 = getRoot(id1)
             val root2 = getRoot(id2)
-            if (root1.numOfKids >= root2.numOfKids) {
-                points[root2.rootId] = root1.rootId
+            if (points.count { it == root1 } >= points.count { it == root2 }) {
+                points.forEachIndexed { index, i ->
+                    if (i == root2) points[index] = root1
+                }
             } else {
-                points[root1.rootId] = root2.rootId
+                points.forEachIndexed { index, i ->
+                    if (i == root1) points[index] = root2
+                }
             }
         }
     }
 
     /* have the same root */
     override fun isConnected(id1: Int, id2: Int): Boolean {
-        val root1 = getRoot(id1).rootId
-        val root2 = getRoot(id2).rootId
+        val root1 = getRoot(id1)
+        val root2 = getRoot(id2)
         return root1 == root2
     }
 
     fun isRoot(id: Int): Boolean = points[id] == id
 
     /**
-     * @return tempId is root
-     * @return childrenCount number of chilren of the the root with the given id
+     * @return tempId is root id
      */
-    fun getRoot(id: Int): Root {
+    fun getRoot(id: Int): Int {
         var tempId: Int = id
-        var childrenCount = 0
         while (tempId != points[id]) {
             tempId = points[id]
         }
-        if (childrenCount == 0) {
-            val kids = countChildren(points, tempId)
-            childrenCount = if (kids > 0) kids else 0
-        }
-        return Root(tempId, childrenCount)
+        return tempId
     }
 
     fun countChildren(points: List<Int>, rootId: Int): Int {
@@ -61,7 +59,7 @@ class WeightedUnionFind(private val count: Int) : IUnionFind {
         return size
     }
 
-    fun find(
+    private fun find(
             bigList: List<Int>,
             children: List<Int>,
             grandChildren: MutableList<Int> = arrayListOf<Int>()
@@ -78,11 +76,6 @@ class WeightedUnionFind(private val count: Int) : IUnionFind {
     }
 
     fun print() {
-        points.forEach { print("$it, ") }
+        points.forEachIndexed { index, i -> print("($index)$i, ") }
     }
-
-    data class Root(
-            val rootId: Int,
-            val numOfKids: Int
-    )
 }

@@ -5,39 +5,33 @@ import kotlin.test.assertTrue
 fun main() {
     println("Hello, Algorithms 1 course: Quick Find Example")
 
-    val sw = StopWatch().apply { start() }
-    weighted(10)
+    val sw = StopWatch()
+    val N = 64000
+    val algorithm = weighted(N)
     println()
-    println(sw.formatTime())
+    //println(sw.formatTime())
+
+    val times = mutableListOf<Long>()
+    repeat(200) {
+        sw.reset()
+        sw.start()
+        algorithm.isConnected(Random.nextInt(N), Random.nextInt(N))
+        sw.stop()
+        times.add(sw.nanoTime)
+    }
+
+    println("Average time for N = $N is ${times.average()} ns")
 }
 
-private fun weighted(num: Int) {
+private fun weighted(num: Int): WeightedUnionFind {
     val w = WeightedUnionFind(num)
     with(w) {
         repeat(num) {
             union(Random.nextInt(num), Random.nextInt(num))
         }
-        /* union(4, 3)
-         union(3, 8)
-         union(6, 5)
-         union(9, 4)
-         union(2, 1)
-         union(5, 0)
-         union(7, 2)
-         union(6, 1)
-         union(7, 3)*/
     }
-
-   /* try {
-        assertTrue { w.isConnected(3, 4) }
-        assertTrue { w.isConnected(3, 8) }
-        assertTrue { w.isConnected(3, 9) }
-    } catch (ex: Throwable) {
-        println("ERROR")
-        w.print()
-        println()
-    }*/
-    w.print()
+    //w.print()
+    return w
 }
 
 private fun quickUnion() {

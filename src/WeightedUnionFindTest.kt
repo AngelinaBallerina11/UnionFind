@@ -1,7 +1,8 @@
-import WeightedUnionFind.Root
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 internal class WeightedUnionFindTest {
     lateinit var w: WeightedUnionFind
@@ -14,7 +15,7 @@ internal class WeightedUnionFindTest {
     @Test
     fun `when all are roots`() {
         repeat(5) { N ->
-            assertEquals(Root(N, 0), w.getRoot(N))
+            assertEquals(N, w.getRoot(N))
         }
     }
 
@@ -24,7 +25,7 @@ internal class WeightedUnionFindTest {
             union(4, 3)
         }
 
-        assertEquals(Root(4, 1), w.getRoot(3))
+        assertEquals(4, w.getRoot(3))
     }
 
     @Test
@@ -34,8 +35,8 @@ internal class WeightedUnionFindTest {
             union(3, 8)
         }
 
-        assertEquals(Root(4, 2), w.getRoot(3), "added 3")
-        assertEquals(Root(4, 2), w.getRoot(8), "added 8")
+        assertEquals(4, w.getRoot(3), "added 3")
+        assertEquals(4, w.getRoot(8), "added 8")
     }
 
     @Test
@@ -80,6 +81,40 @@ internal class WeightedUnionFindTest {
     fun `count children when there is one tree with 7 kids - depth 4`() {
         val list = arrayListOf(6, 2, 6, 7, 4, 6, 6, 2, 3, 4)
         assertEquals(7, w.countChildren(list, 6))
+    }
+
+    @Test
+    fun `union - one link`() {
+        w.union(5, 6)
+        assertTrue { w.isConnected(5, 6) }
+        assertTrue { w.isRoot(5) }
+        w.union(0, 6)
+        assertTrue { w.isConnected(0, 6) }
+        assertTrue { w.isRoot(5) }
+        w.union(2, 6)
+        assertTrue { w.isConnected(2, 6) }
+        assertTrue { w.isRoot(5) }
+        w.union(5, 3)
+        assertTrue { w.isConnected(3, 6) }
+        assertTrue { w.isRoot(5) }
+    }
+
+    @Test
+    fun `union - two trees`() {
+        w.union(5, 6)
+        w.union(0, 6)
+        w.union(2, 6)
+        assertTrue { w.isRoot(5) }
+
+        w.union(4, 3)
+        w.union(4, 1)
+        assertTrue { w.isConnected(3, 1) }
+        assertTrue { w.isRoot(4) }
+
+        w.union(4, 5)
+        assertTrue { w.isRoot(5) }
+        assertFalse { w.isRoot(4) }
+        assertTrue { w.isConnected(3, 0) }
     }
 
 }
